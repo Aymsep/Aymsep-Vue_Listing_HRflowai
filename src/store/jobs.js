@@ -1,51 +1,51 @@
 import { defineStore } from "pinia";
-import {useFetchApi} from '@/composables/useFetchApi';
-import {getJobs} from '@/services/api';
+import { useFetchApi } from '@/composables/useFetchApi';
+import { getJobs } from '@/services/api';
 
-const {
-    data,
-    loading,
-    error,
-    fetchData
-} = useFetchApi(()=>getJobs())
-
-export const useJobsStore = defineStore('jobs',{
-    state:()=>({
-        jobs:[],
-        loading:loading,
-        error:error
-    }),
-    getters: {
-        Jobs:state=>state.jobs,
-        getJobById: (state) => (id) => {
-            return state.jobs.find(job => job.id.toString() === id.toString());
-          }
+// Move useFetchApi inside the action to properly manage its lifecycle
+export const useJobsStore = defineStore('jobs', {
+  state: () => ({
+    jobs: [],
+    allJobs: [],
+    loading: false,
+    error: null
+  }),
+  getters: {
+    Jobs: state => state.jobs,
+    getJobById: state => id => {
+      return state.jobs.find(job => job.id.toString() === id.toString());
     },
-    actions:{
-        async getJobs(){
-            if(this.jobs.length === 0){
-                try{
-                     this.loading = loading;
-                     await fetchData();
-                     this.jobs = data.value;
-                }catch(err){
-                     this.error = error;
-                     console.log(err);
-                }finally{
-                     this.loading = loading;
-                }
-            }
-        },
-        clearError(){
-            this.error = null;
-        },
-        
+  },
+  actions: {
+    async getJobs() {
+      const { data, fetchData } = useFetchApi(getJobs);
+      this.loading = true;
+      try {
+        await fetchData();
+        this.allJobs = data.value;
+        this.jobs = data.value;
+      } catch (err) {
+        this.error = err.message || 'Failed to fetch jobs';
+      } finally {
+        this.loading = false;
+      }
     },
-    // persist: {
-    //     enabled: true,
-    //     strategies:[{
-    //         storage: localStorage,
-    //         key: 'jobs',
-    //     }],
-    //   }
-})
+    clearError() {
+      this.error = null;
+    },
+    filterJobs(query) {
+        if (query) {
+          this.jobs = this.allJobs.filter(job => job.name.toLowerCase().includes(query.toLowerCase()));
+        } else {
+          this.jobs = [...this.allJobs];
+        }
+      }
+  },
+  persist: {
+    enabled: true,
+    strategies: [{
+      storage: localStorage,
+      key: 'jobs',
+    }],
+  }
+});

@@ -9,7 +9,7 @@ import piniaPersist from 'pinia-plugin-persist'
 
 
 const pinia = createPinia()
-// pinia.use(piniaPersist)
+pinia.use(piniaPersist)
 
 
 createApp(App)

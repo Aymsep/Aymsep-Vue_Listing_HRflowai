@@ -13,6 +13,9 @@
               <span class="text-sm">{{ job.tags.length > 1 ? job.tags[1].value : 'N/A' }}</span>
             </div>
           </div>
+          <div class="badges mt-5">
+            <Badges :items="job.skills" :shows="3" />
+        </div>
         </div>
       </div>
       <div id="details" class="flex items-center gap-2">
@@ -21,16 +24,23 @@
         </Router-link>
         <Icon style="margin-top: 5px; color:#0d9488;" width="30" height="22" color="text-teal-600" icon="guidance:left-arrow" />
       </div>
+      
     </li>
   </template>
   
   
   <script setup>
   import { Icon } from '@iconify/vue';
+  import { computed } from 'vue';
+  import Badges from '@/components/common/Badges.vue';
   const props = defineProps({
     job:{
         type:Object,
         required:true
         }
+    });
+    const Skills = computed(() => {
+       const d = props.job.skills.map(i=>i.name)
+       console.log(d,'d')
     });
   </script>

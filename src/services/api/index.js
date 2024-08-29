@@ -5,8 +5,8 @@ const api  = axios.create({
     baseURL:`https://api.hrflow.ai/v1/jobs/searching?board_keys=${import.meta.env['VITE_BOARD_KEY']}`,
     headers: {
         accept: 'application/json',
-        ['X-API-KEY']: import.meta.env['VITE_X-API-KEY'],
-        ['X-USER-EMAIL']: import.meta.env['VITE_X-USER-EMAIL'],
+        ['X-API-KEY']: import.meta.env.VITE_X_API_KEY,
+        ['X-USER-EMAIL']: import.meta.env.VITE_X_USER_EMAIL,
       }
 })
 
